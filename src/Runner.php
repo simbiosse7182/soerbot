@@ -83,8 +83,8 @@ class Runner
     public function logReadyState(): void
     {
         $this->client->on('ready', function () {
-            echo 'Logged in as ' . $this->client->user->tag . ' created on ' .
-                $this->client->user->createdAt->format('d.m.Y H:i:s') . PHP_EOL;
+            echo 'Logged in as ' . $this->client->user->tag . ' started at ' .
+            date('d.m.Y H:i:s') . PHP_EOL;
         });
     }
 
@@ -105,7 +105,6 @@ class Runner
     private function registerExitEvent(): void
     {
         $this->client->once('stop', function () {
-            echo 'stop';
             $this->loop->stop();
         });
     }
@@ -119,7 +118,16 @@ class Runner
         $this->client->once('ready', function () {
             try {
                 $channel = $this->client->channels->first(function ($channel) {
-                    return $channel->name === 'основной';
+                    $config = Configurator::get(
+                        'SpideyBot',
+                        [
+                            'branch' => 'develop',
+                            'color' => 3066993,
+                            'channel' => 'discord-bot-php',
+                        ]
+                    );
+
+                    return $channel->name === $config['channel'];
                 });
 
                 if ($channel && Configurator::get('development', false)) {
